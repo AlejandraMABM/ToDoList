@@ -11,10 +11,10 @@ class TaskDAO (val context: Context) {
 
 private lateinit var db:SQLiteDatabase
 
-private fun open()
-{
-    db = DataBaseManager(context).writableDatabase
-}
+    private fun open()
+    {
+        db = DataBaseManager(context).writableDatabase
+    }
 
     private fun close() {
         db.close()
@@ -74,7 +74,7 @@ fun delete(task: Task){
     }
 }
 
-    fun finfById (id:Long) : Task? {
+    fun findById (id:Long) : Task? {
         open()
 
         // Define a projection that specifies which columns from the database
@@ -96,7 +96,7 @@ fun delete(task: Task){
         if (cursor.moveToNext()) {
             val id = cursor.getLong(cursor.getColumnIndexOrThrow(Task.COLUMN_ID))
             val name = cursor.getString(cursor.getColumnIndexOrThrow(Task.COLUM_NAME))
-            val done = cursor.getInt(cursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) != 0
+            val done = cursor.getInt(cursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) == 1
 
             return Task(id,name,done)
         }
@@ -106,6 +106,42 @@ fun delete(task: Task){
         close()
     }
         return null
+    }
+
+    fun findAll() : List<Task> {
+        open()
+
+        var list:MutableList<Task> = mutableListOf()
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+
+        val projection = arrayOf(Task.COLUMN_ID,Task.COLUM_NAME,Task.COLUMN_DONE)
+
+        try {
+            val cursor = db.query(
+                Task.TABLE_NAME,                    // The table to query
+                projection,                         // The array of columns to return (pass null to get all)
+                null,                       // The columns for the WHERE clause
+                null,                   // The values for the WHERE clause
+                null,                       // don't group the rows
+                null,                         // don't filter by row groups
+                null                         // The sort order
+            )
+
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(cursor.getColumnIndexOrThrow(Task.COLUMN_ID))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow(Task.COLUM_NAME))
+                val done = cursor.getInt(cursor.getColumnIndexOrThrow(Task.COLUMN_DONE)) != 0
+
+                val task = Task(id,name,done)
+                list.add(task)
+            }
+        } catch (e:Exception) {
+            Log.e("DB",e.stackTraceToString())
+        }finally {
+            close()
+        }
+        return list
     }
 
 }
