@@ -14,7 +14,7 @@ class TaskAdapter(
     val onItemCheck: (Int) -> Unit,
     val onItemDelete: (Int) -> Unit
 ) :
-    RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
+    RecyclerView.Adapter<TaskViewHolder>() {
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = items[position]
@@ -32,6 +32,7 @@ class TaskAdapter(
             }
 
         }
+    }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
             val binding =
