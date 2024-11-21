@@ -23,11 +23,15 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var taskDAO: TaskDAO
 
-    var taskList: List<Task> = emptyList()
+    var taskList: List<Task> = mutableListOf()
+
+    private fun checkTask(task: Task): Any {
+
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
+        enableEdgeToEdge()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
 
@@ -45,12 +49,19 @@ class MainActivity : AppCompatActivity() {
      taskDAO.insert(Task(-1, "Pagar el alquiler"))
      taskDAO.insert(Task(-1, "Pasear al perro"))*/
 
-        adapter = TaskAdapter(taskList) {
+        adapter = TaskAdapter(taskList, {
+            //Editar Tarea
             val task = taskList[it]
-            task.done = !task.done
-            taskDAO.update(task)
-            adapter.uodateItems(taskList)
-        }
+            showTask(task) },
+            {
+                //Marcar tarea
+            val task = taskList[it]
+            checkTask(task)
+        }, {
+            // Borrar tarea
+            val task = taskList[it]
+                deleteTask(task)
+            })
 
 
         binding.recyclerView.adapter = adapter
@@ -61,6 +72,10 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TaskActivity::class.java)
             startActivity(intent)
         }
+
+    }
+
+    private fun showTask(task: Task) {
 
     }
 
