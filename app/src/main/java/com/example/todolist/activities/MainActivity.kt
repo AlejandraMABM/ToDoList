@@ -106,7 +106,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    //Mostramos la tarea para editarla
+    //Mostramos la tarea para editarla funciona correctamente
 
     fun showTask(task: Task) {
         val intent = Intent(this,TaskActivity::class.java)
