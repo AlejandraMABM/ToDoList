@@ -42,22 +42,19 @@ class MainActivity : AppCompatActivity() {
         taskDAO = TaskDAO(this)
 
 
-        adapter = TaskAdapter(taskList, {
-            //Editar Tarea
-            val task = taskList[it]
-            println("mostrar tarea")
-            showTask(task)
-        }, {
-                //Marcar tarea
-                val task = taskList[it]
-                checkTask(task)
-            }, {
-                // Borrar tarea
-                val task = taskList[it]
-            println("eliminar tarea")
-                deleteTask(task)
-            })
+        adapter = TaskAdapter(taskList,
 
+                             { //Editar Tarea  "onItemClick"  y " boton editar tarea"
+                                 val task = taskList[it]
+                                  showTask(task) },
+
+                             { //Marcar tarea   "onItemCheck"
+                                 val task = taskList[it]
+                                 checkTask(task)},
+
+                             { // Borrar tarea   "onItemDelete"
+                                  val task = taskList[it]
+                                  deleteTask(task) })
 
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager =
@@ -68,6 +65,9 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, TaskActivity::class.java)
             startActivity(intent)
         }
+
+
+
 
     }
 
@@ -113,5 +113,6 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra(TaskActivity.EXTRA_TASK_ID,task.id)
         startActivity(intent)
 
-    }
+
+        }
 }

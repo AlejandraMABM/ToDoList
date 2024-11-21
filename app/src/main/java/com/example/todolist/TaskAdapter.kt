@@ -9,7 +9,7 @@ import com.example.todolist.databinding.ItemTaskBinding
 
 
 class TaskAdapter(
-    var items: List<Task>,
+    var items: MutableList<Task>,
     val onItemClick: (Int) -> Unit,
     val onItemCheck: (Int) -> Unit,
     val onItemDelete: (Int) -> Unit
@@ -31,6 +31,11 @@ class TaskAdapter(
         holder.binding.deleteButton.setOnClickListener {
             onItemDelete(position)
         }
+
+        holder.binding.editButton.setOnClickListener {
+            onItemClick(position)
+        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
@@ -43,7 +48,7 @@ class TaskAdapter(
         return items.size
     }
 
-    fun updateItems(items: List<Task>) {
+    fun updateItems(items: MutableList<Task>) {
         this.items = items
         notifyDataSetChanged()
     }
