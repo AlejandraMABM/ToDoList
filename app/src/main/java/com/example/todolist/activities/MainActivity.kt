@@ -2,8 +2,8 @@ package com.example.todolist.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Telephony.Mms.Intents
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -13,7 +13,6 @@ import com.example.todolist.TaskAdapter
 import com.example.todolist.data.Task
 import com.example.todolist.data.providers.TaskDAO
 import com.example.todolist.databinding.ActivityMainBinding
-import com.example.todolist.databinding.ActivityTaskBinding
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,11 +22,8 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var taskDAO: TaskDAO
 
-    var taskList: List<Task> = mutableListOf()
+    var taskList: MutableList<Task> = mutableListOf()
 
-    private fun checkTask(task: Task): Any {
-
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,21 +41,20 @@ class MainActivity : AppCompatActivity() {
 
         taskDAO = TaskDAO(this)
 
-        /*taskDAO.insert(Task(-1, "Comprar leche"))
-     taskDAO.insert(Task(-1, "Pagar el alquiler"))
-     taskDAO.insert(Task(-1, "Pasear al perro"))*/
 
         adapter = TaskAdapter(taskList, {
             //Editar Tarea
             val task = taskList[it]
-            showTask(task) },
-            {
-                //Marcar tarea
-            val task = taskList[it]
-            checkTask(task)
+            println("mostrar tarea")
+            showTask(task)
         }, {
-            // Borrar tarea
-            val task = taskList[it]
+                //Marcar tarea
+                val task = taskList[it]
+                checkTask(task)
+            }, {
+                // Borrar tarea
+                val task = taskList[it]
+            println("eliminar tarea")
                 deleteTask(task)
             })
 
@@ -68,6 +63,7 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerView.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
+        // Crear  tarea
         binding.addTaskButton.setOnClickListener {
             val intent = Intent(this, TaskActivity::class.java)
             startActivity(intent)
@@ -75,15 +71,47 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun showTask(task: Task) {
+
+    override fun onResume() {
+        super.onResume()
+
+        // Cargamos la lista por si se hubiera añadido una tarea nueva
+        taskList = taskDAO.findAll().toMutableList()
+        adapter.updateItems(taskList)
+    }
+
+    // Funcion para cuando marcamos una tarea (finalizada/pendiente)
+    fun checkTask(task: Task)
+    {
+        task.done = !task.done
+        taskDAO.update(task)
+        adapter.updateItems(taskList)
+    }
+
+    // Funciona para mostrar un dialogo para borrar la tarea
+    fun deleteTask(task: Task) {
+        AlertDialog.Builder(this)
+            .setTitle("Borrar Tarea")
+            .setMessage("Estás seguro de que quieres borrar la tarea")
+            .setPositiveButton(android.R.string.ok) {
+                dialog, which ->
+                // Borramos la tarea en caso de pulsar el botón ok
+                taskDAO.delete(task)
+                taskList.remove(task)
+                adapter.updateItems(taskList)
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .setIcon(R.drawable.ic_delete)
+            .show()
 
     }
 
-    override fun OnResume() {
-        super.onResume()
+    //Mostramos la tarea para editarla
 
-        taskList = taskDAO.findAll()
+    fun showTask(task: Task) {
+        val intent = Intent(this,TaskActivity::class.java)
+        intent.putExtra(TaskActivity.EXTRA_TASK_ID,task.id)
+        startActivity(intent)
 
-        adapter.uodateItems(taskList)
     }
 }

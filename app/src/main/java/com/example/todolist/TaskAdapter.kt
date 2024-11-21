@@ -27,33 +27,32 @@ class TaskAdapter(
             if (checkBox.isPressed) {
                 onItemCheck(position)
             }
-            holder.binding.deleteButton.setOnClickListener {
-                onItemDelete(position)
-            }
-
+        }
+        holder.binding.deleteButton.setOnClickListener {
+            onItemDelete(position)
         }
     }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-            val binding =
-                ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return TaskViewHolder(binding)
-        }
-
-        override fun getItemCount(): Int {
-            return items.size
-        }
-
-        fun uodateItems(items: List<Task>) {
-            this.items = items
-            notifyDataSetChanged()
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
+        val binding =
+            ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return TaskViewHolder(binding)
     }
 
-    class TaskViewHolder(val binding: ItemTaskBinding) : ViewHolder(binding.root) {
-
-        fun render(task: Task) {
-            binding.nameTextView.text = task.name
-            binding.doneCheckBox.isChecked = task.done
-        }
+    override fun getItemCount(): Int {
+        return items.size
     }
+
+    fun updateItems(items: List<Task>) {
+        this.items = items
+        notifyDataSetChanged()
+    }
+}
+
+class TaskViewHolder(val binding: ItemTaskBinding) : ViewHolder(binding.root) {
+
+    fun render(task: Task) {
+        binding.nameTextView.text = task.name
+        binding.doneCheckBox.isChecked = task.done
+    }
+}
